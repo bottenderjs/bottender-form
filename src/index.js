@@ -1,0 +1,61 @@
+// const step = {
+//   question:
+//   validation:
+//   stateKey:
+// }
+
+const set = require('lodash/set');
+
+const alwaysFalse = () => false;
+
+module.exports = ({ name, shouldStart = alwaysFalse, steps } = {}) => async (
+  context,
+  next
+) => {
+  const { $form } = context.state;
+
+  if (!$form) {
+    if (shouldStart(context)) {
+      await context.sendText(steps[0].question);
+      context.setState({
+        $form: {
+          name,
+          index: 0,
+        },
+      });
+      return;
+    }
+    return next();
+  }
+  if ($form.name !== name) return next();
+
+  const step = steps[$form.index];
+
+  if (
+    !context.event.isText ||
+    (step.validation && !step.validation(context.event.text))
+  ) {
+    await context.sendText('Validation failed. Please try again.');
+    await context.sendText(step.question);
+    return;
+  }
+
+  context.setState({
+    ...set(context.state, step.stateKey, context.event.text),
+  });
+
+  if ($form.index === steps.length - 1) {
+    context.setState({
+      $form: null,
+    });
+  } else {
+    const nextIndex = $form.index + 1;
+    await context.sendText(steps[nextIndex].question);
+    context.setState({
+      $form: {
+        ...$form,
+        index: nextIndex,
+      },
+    });
+  }
+};
