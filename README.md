@@ -55,6 +55,10 @@ Default: `() => false`.
 
 ### stateKey
 
+### retryMessage
+
+Default: `Validation failed. Please try again.`
+
 ## License
 
 MIT © [Yoctol](https://github.com/bottenderjs/bottender-form)
