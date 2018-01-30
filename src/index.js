@@ -7,11 +7,14 @@
 const set = require('lodash/set');
 
 const alwaysFalse = () => false;
+const RETRY_MESSAGE = 'Validation failed. Please try again.';
 
-module.exports = ({ name, shouldStart = alwaysFalse, steps } = {}) => async (
-  context,
-  next
-) => {
+module.exports = ({
+  name,
+  shouldStart = alwaysFalse,
+  steps,
+  retryMessage = RETRY_MESSAGE,
+} = {}) => async (context, next) => {
   const { $form } = context.state;
 
   if (!$form) {
@@ -35,7 +38,7 @@ module.exports = ({ name, shouldStart = alwaysFalse, steps } = {}) => async (
     !context.event.isText ||
     (step.validation && !step.validation(context.event.text))
   ) {
-    await context.sendText('Validation failed. Please try again.');
+    await context.sendText(retryMessage);
     await context.sendText(step.question);
     return;
   }

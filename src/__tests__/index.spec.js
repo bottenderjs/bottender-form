@@ -1,6 +1,6 @@
 const form = require('../');
 
-function setup() {
+function setup(options = {}) {
   return {
     handler: form({
       name: 'user',
@@ -16,6 +16,7 @@ function setup() {
           stateKey: 'user.age',
         },
       ],
+      ...options,
     }),
     next: jest.fn(),
   };
@@ -179,6 +180,32 @@ it('should retry when receiving wrong anwser', async () => {
   expect(context.sendText).toBeCalledWith(
     'Validation failed. Please try again.'
   );
+  expect(context.sendText).toBeCalledWith('How old are you?');
+
+  expect(next).not.toBeCalled();
+});
+
+it('should retry when receiving wrong anwser', async () => {
+  const { handler, next } = setup({ retryMessage: 'Oh no....' });
+
+  const context = {
+    state: {
+      $form: { name: 'user', index: 1 },
+      user: {
+        name: 'myname',
+      },
+    },
+    event: {
+      isText: true,
+      text: 'wrong',
+    },
+    setState: jest.fn(),
+    sendText: jest.fn(),
+  };
+
+  await handler(context, next);
+
+  expect(context.sendText).toBeCalledWith('Oh no....');
   expect(context.sendText).toBeCalledWith('How old are you?');
 
   expect(next).not.toBeCalled();
