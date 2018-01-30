@@ -32,8 +32,8 @@
   },
   "keywords": [
     "bottender",
-    "handovers",
-    "messenger"
+    "conversational-form",
+    "form"
   ],
   "lint-staged": {
     "*.js": [
