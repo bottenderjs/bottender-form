@@ -159,58 +159,94 @@ it('should set state when receiving second anwser', async () => {
   expect(next).not.toBeCalled();
 });
 
-it('should retry when receiving wrong anwser', async () => {
-  const { handler, next } = setup();
+describe('retry', () => {
+  it('should retry when receiving wrong anwser', async () => {
+    const { handler, next } = setup();
 
-  const context = {
-    state: {
-      $form: { name: 'user', index: 1 },
-      user: {
-        name: 'myname',
+    const context = {
+      state: {
+        $form: { name: 'user', index: 1 },
+        user: {
+          name: 'myname',
+        },
       },
-    },
-    event: {
-      isText: true,
-      text: 'wrong',
-    },
-    setState: jest.fn(),
-    sendText: jest.fn(),
-  };
-
-  await handler(context, next);
-
-  expect(context.sendText).toBeCalledWith(
-    'Validation failed. Please try again.'
-  );
-  expect(context.sendText).toBeCalledWith('How old are you?');
-
-  expect(next).not.toBeCalled();
-});
-
-it('should retry when receiving wrong anwser', async () => {
-  const { handler, next } = setup({ retryMessage: 'Oh no....' });
-
-  const context = {
-    state: {
-      $form: { name: 'user', index: 1 },
-      user: {
-        name: 'myname',
+      event: {
+        isText: true,
+        text: 'wrong',
       },
-    },
-    event: {
-      isText: true,
-      text: 'wrong',
-    },
-    setState: jest.fn(),
-    sendText: jest.fn(),
-  };
+      setState: jest.fn(),
+      sendText: jest.fn(),
+    };
 
-  await handler(context, next);
+    await handler(context, next);
 
-  expect(context.sendText).toBeCalledWith('Oh no....');
-  expect(context.sendText).toBeCalledWith('How old are you?');
+    expect(context.sendText).toBeCalledWith(
+      'Validation failed. Please try again.'
+    );
+    expect(context.sendText).toBeCalledWith('How old are you?');
+    expect(context.setState).toBeCalledWith({
+      $form: { name: 'user', index: 1, retry: 1 },
+    });
 
-  expect(next).not.toBeCalled();
+    expect(next).not.toBeCalled();
+  });
+
+  it('should use custom retry message when retryMessage assigned', async () => {
+    const { handler, next } = setup({ retryMessage: 'Oh no....' });
+
+    const context = {
+      state: {
+        $form: { name: 'user', index: 1 },
+        user: {
+          name: 'myname',
+        },
+      },
+      event: {
+        isText: true,
+        text: 'wrong',
+      },
+      setState: jest.fn(),
+      sendText: jest.fn(),
+    };
+
+    await handler(context, next);
+
+    expect(context.sendText).toBeCalledWith('Oh no....');
+    expect(context.sendText).toBeCalledWith('How old are you?');
+    expect(context.setState).toBeCalledWith({
+      $form: { name: 'user', index: 1, retry: 1 },
+    });
+
+    expect(next).not.toBeCalled();
+  });
+
+  it('should stop when it reaches retry times limit', async () => {
+    const { handler, next } = setup();
+
+    const context = {
+      state: {
+        $form: { name: 'user', index: 1, retry: 2 },
+        user: {
+          name: 'myname',
+        },
+      },
+      event: {
+        isText: true,
+        text: '????',
+      },
+      setState: jest.fn(),
+      sendText: jest.fn(),
+    };
+
+    await handler(context, next);
+
+    expect(context.sendText).not.toBeCalled();
+    expect(context.setState).toBeCalledWith({
+      $form: null,
+    });
+
+    expect(next).not.toBeCalled();
+  });
 });
 
 it('should support async validation', async () => {
@@ -252,7 +288,7 @@ it('should support async validation', async () => {
   expect(next).not.toBeCalled();
 });
 
-it('should break out retry loop when should start', async () => {
+it('should break out when should stop', async () => {
   const { handler, next } = setup();
 
   const context = {

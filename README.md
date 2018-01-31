@@ -62,7 +62,11 @@ Default: `() => false`.
 
 ### retryMessage
 
-Default: `Validation failed. Please try again.`
+Default: `Validation failed. Please try again.`.
+
+### retryTimes
+
+Default: `3`.
 
 ### Step
 

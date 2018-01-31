@@ -15,6 +15,7 @@ module.exports = ({
   shouldStop = alwaysFalse,
   steps,
   retryMessage = RETRY_MESSAGE,
+  retryTimes = 3,
 } = {}) => async (context, next) => {
   const { $form } = context.state;
 
@@ -38,18 +39,27 @@ module.exports = ({
 
   const step = steps[$form.index];
 
-  if (!context.event.isText) {
-    await context.sendText(retryMessage);
-    await context.sendText(step.question);
-    return;
-  }
+  const shouldRetry =
+    !context.event.isText ||
+    (step.validation &&
+      !await Promise.resolve(step.validation(context.event.text)));
 
-  if (
-    step.validation &&
-    !await Promise.resolve(step.validation(context.event.text))
-  ) {
+  if (shouldRetry) {
+    const retry = ($form.retry || 0) + 1;
+    if (retry === retryTimes) {
+      context.setState({
+        $form: null,
+      });
+      return;
+    }
     await context.sendText(retryMessage);
     await context.sendText(step.question);
+    context.setState({
+      $form: {
+        ...$form,
+        retry,
+      },
+    });
     return;
   }
 
