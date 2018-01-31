@@ -50,15 +50,33 @@ bot.onEvent(
 
 ### name
 
+`text`
+
 ### shouldStart
 
 Default: `() => false`.
 
-### stateKey
-
 ### retryMessage
 
 Default: `Validation failed. Please try again.`
+
+### Step
+
+#### question
+
+`text`
+
+#### stateKey
+
+`text`
+
+#### validation
+
+`text => boolean | async text => boolean`
+
+#### map
+
+`text => any`
 
 ## License
 

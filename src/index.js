@@ -34,9 +34,15 @@ module.exports = ({
 
   const step = steps[$form.index];
 
+  if (!context.event.isText) {
+    await context.sendText(retryMessage);
+    await context.sendText(step.question);
+    return;
+  }
+
   if (
-    !context.event.isText ||
-    (step.validation && !step.validation(context.event.text))
+    step.validation &&
+    !await Promise.resolve(step.validation(context.event.text))
   ) {
     await context.sendText(retryMessage);
     await context.sendText(step.question);

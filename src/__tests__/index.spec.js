@@ -211,3 +211,42 @@ it('should retry when receiving wrong anwser', async () => {
 
   expect(next).not.toBeCalled();
 });
+
+it('should support async validation', async () => {
+  const { handler, next } = setup({
+    steps: [
+      {
+        question: "What's your name?",
+        validation: async () => false,
+        stateKey: 'user.name',
+      },
+      {
+        question: 'How old are you?',
+        validation: text => /\d+/.test(text),
+        map: numstr => +numstr,
+        stateKey: 'user.age',
+      },
+    ],
+  });
+
+  const context = {
+    state: {
+      $form: { name: 'user', index: 0 },
+    },
+    event: {
+      isText: true,
+      text: 'wrong',
+    },
+    setState: jest.fn(),
+    sendText: jest.fn(),
+  };
+
+  await handler(context, next);
+
+  expect(context.sendText).toBeCalledWith(
+    'Validation failed. Please try again.'
+  );
+  expect(context.sendText).toBeCalledWith("What's your name?");
+
+  expect(next).not.toBeCalled();
+});
