@@ -43,8 +43,10 @@ module.exports = ({
     return;
   }
 
+  const map = step.map || (val => val);
+
   context.setState({
-    ...set(context.state, step.stateKey, context.event.text),
+    ...set(context.state, step.stateKey, map(context.event.text)),
   });
 
   if ($form.index === steps.length - 1) {

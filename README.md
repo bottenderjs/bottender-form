@@ -28,6 +28,7 @@ const handleForm = form({
     {
       question: 'How old are you?',
       validation: text => /\d+/.test(text),
+      map: numstr => +numstr,
       stateKey: 'user.age',
     },
   ],

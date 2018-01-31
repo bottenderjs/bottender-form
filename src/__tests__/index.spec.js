@@ -13,6 +13,7 @@ function setup(options = {}) {
         {
           question: 'How old are you?',
           validation: text => /\d+/.test(text),
+          map: numstr => +numstr,
           stateKey: 'user.age',
         },
       ],
@@ -145,7 +146,7 @@ it('should set state when receiving second anwser', async () => {
     $form: { name: 'user', index: 1 },
     user: {
       name: 'myname',
-      age: '18',
+      age: 18,
     },
   });
   expect(context.setState).toBeCalledWith({
