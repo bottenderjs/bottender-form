@@ -21,7 +21,11 @@ module.exports = ({
 
   if (!$form) {
     if (shouldStart(context)) {
-      await context.sendText(steps[0].question);
+      if (typeof steps[0].question === 'function') {
+        await steps[0].question(context);
+      } else {
+        await context.sendText(steps[0].question);
+      }
       context.setState({
         $form: {
           name,
@@ -53,7 +57,11 @@ module.exports = ({
       return;
     }
     await context.sendText(retryMessage);
-    await context.sendText(step.question);
+    if (typeof step.question === 'function') {
+      await step.question(context);
+    } else {
+      await context.sendText(step.question);
+    }
     context.setState({
       $form: {
         ...$form,
@@ -75,7 +83,11 @@ module.exports = ({
     });
   } else {
     const nextIndex = $form.index + 1;
-    await context.sendText(steps[nextIndex].question);
+    if (typeof steps[nextIndex].question === 'function') {
+      await steps[nextIndex].question(context);
+    } else {
+      await context.sendText(steps[nextIndex].question);
+    }
     context.setState({
       $form: {
         ...$form,

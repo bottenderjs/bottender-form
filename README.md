@@ -72,7 +72,7 @@ Default: `3`.
 
 #### question
 
-`text`
+`text | async context => void`
 
 #### stateKey
 
