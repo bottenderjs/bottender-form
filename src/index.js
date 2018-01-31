@@ -12,6 +12,7 @@ const RETRY_MESSAGE = 'Validation failed. Please try again.';
 module.exports = ({
   name,
   shouldStart = alwaysFalse,
+  shouldStop = alwaysFalse,
   steps,
   retryMessage = RETRY_MESSAGE,
 } = {}) => async (context, next) => {
@@ -30,6 +31,9 @@ module.exports = ({
     }
     return next();
   }
+
+  if (shouldStop(context)) return;
+
   if ($form.name !== name) return next();
 
   const step = steps[$form.index];

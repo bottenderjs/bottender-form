@@ -56,6 +56,10 @@ bot.onEvent(
 
 Default: `() => false`.
 
+### shouldStop
+
+Default: `() => false`.
+
 ### retryMessage
 
 Default: `Validation failed. Please try again.`
