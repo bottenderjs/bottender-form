@@ -159,6 +159,42 @@ it('should set state when receiving second anwser', async () => {
   expect(next).not.toBeCalled();
 });
 
+it('should accept function as question', async () => {
+  const { handler, next } = setup({
+    steps: [
+      {
+        question: async context => context.sendText('???'),
+        stateKey: 'user.name',
+      },
+      {
+        question: 'How old are you?',
+        validation: text => /\d+/.test(text),
+        map: numstr => +numstr,
+        stateKey: 'user.age',
+      },
+    ],
+  });
+
+  const context = {
+    state: {},
+    event: {
+      isText: true,
+      text: '/form',
+    },
+    setState: jest.fn(),
+    sendText: jest.fn(),
+  };
+
+  await handler(context, next);
+
+  expect(context.setState).toBeCalledWith({
+    $form: { name: 'user', index: 0 },
+  });
+  expect(context.sendText).toBeCalledWith('???');
+
+  expect(next).not.toBeCalled();
+});
+
 describe('retry', () => {
   it('should retry when receiving wrong anwser', async () => {
     const { handler, next } = setup();
