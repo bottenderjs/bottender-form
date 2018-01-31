@@ -5,6 +5,7 @@ function setup(options = {}) {
     handler: form({
       name: 'user',
       shouldStart: context => context.event.text === '/form',
+      shouldStop: context => context.event.text === '/stop',
       steps: [
         {
           question: "What's your name?",
@@ -247,6 +248,31 @@ it('should support async validation', async () => {
     'Validation failed. Please try again.'
   );
   expect(context.sendText).toBeCalledWith("What's your name?");
+
+  expect(next).not.toBeCalled();
+});
+
+it('should break out retry loop when should start', async () => {
+  const { handler, next } = setup();
+
+  const context = {
+    state: {
+      $form: { name: 'user', index: 1 },
+      user: {
+        name: 'myname',
+      },
+    },
+    event: {
+      isText: true,
+      text: '/stop',
+    },
+    setState: jest.fn(),
+    sendText: jest.fn(),
+  };
+
+  await handler(context, next);
+
+  expect(context.sendText).not.toBeCalled();
 
   expect(next).not.toBeCalled();
 });
