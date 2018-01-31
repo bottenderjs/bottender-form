@@ -7,12 +7,14 @@
 const set = require('lodash/set');
 
 const alwaysFalse = () => false;
+const noop = () => false;
 const RETRY_MESSAGE = 'Validation failed. Please try again.';
 
 module.exports = ({
   name,
   shouldStart = alwaysFalse,
   shouldStop = alwaysFalse,
+  didFinish = noop,
   steps,
   retryMessage = RETRY_MESSAGE,
   retryTimes = 3,
@@ -81,6 +83,7 @@ module.exports = ({
     context.setState({
       $form: null,
     });
+    await didFinish(context);
   } else {
     const nextIndex = $form.index + 1;
     if (typeof steps[nextIndex].question === 'function') {

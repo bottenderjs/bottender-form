@@ -68,6 +68,10 @@ Default: `Validation failed. Please try again.`.
 
 Default: `3`.
 
+### didFinish
+
+Default: `() => {}`.
+
 ### Step
 
 #### question

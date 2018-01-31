@@ -159,6 +159,41 @@ it('should set state when receiving second anwser', async () => {
   expect(next).not.toBeCalled();
 });
 
+it('should set state when receiving second anwser', async () => {
+  const didFinish = jest.fn();
+  const { handler, next } = setup({
+    didFinish,
+  });
+
+  const context = {
+    state: {
+      $form: { name: 'user', index: 1 },
+      user: {
+        name: 'myname',
+      },
+    },
+    event: {
+      isText: true,
+      text: '18',
+    },
+    setState: jest.fn(),
+    sendText: jest.fn(),
+  };
+
+  await handler(context, next);
+
+  expect(context.setState).toBeCalledWith({
+    $form: { name: 'user', index: 1 },
+    user: {
+      name: 'myname',
+      age: 18,
+    },
+  });
+  expect(didFinish).toBeCalledWith(context);
+
+  expect(next).not.toBeCalled();
+});
+
 it('should accept function as question', async () => {
   const { handler, next } = setup({
     steps: [
