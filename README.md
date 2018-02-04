@@ -1,6 +1,7 @@
 # bottender-form
 
 [![npm](https://img.shields.io/npm/v/bottender-form.svg?style=flat-square)](https://www.npmjs.com/package/bottender-form)
+[![Build Status](https://travis-ci.org/bottenderjs/bottender-form.svg?branch=master)](https://travis-ci.org/bottenderjs/bottender-form)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > An experimental package for handling conversational form with [Bottender](https://github.com/Yoctol/bottender).
