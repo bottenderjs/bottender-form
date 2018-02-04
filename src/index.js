@@ -7,7 +7,7 @@
 const set = require('lodash/set');
 
 const alwaysFalse = () => false;
-const noop = () => false;
+const noop = () => {};
 const RETRY_MESSAGE = 'Validation failed. Please try again.';
 
 module.exports = ({
