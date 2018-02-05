@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "bottender": "latest",
+    "bottender-form": "latest",
+    "lodash": "^4.17.5"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}

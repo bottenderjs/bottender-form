@@ -6,6 +6,9 @@ const bot = new ConsoleBot();
 const handleForm = form({
   name: 'user',
   shouldStart: context => context.event.text === '/form',
+  didFinish: async context => {
+    await context.sendText('OK!');
+  },
   steps: [
     {
       question: "What's your name?",
@@ -14,6 +17,7 @@ const handleForm = form({
     {
       question: 'How old are you?',
       validation: text => /\d+/.test(text),
+      map: numstr => +numstr,
       stateKey: 'user.age',
     },
   ],
